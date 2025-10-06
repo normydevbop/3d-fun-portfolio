@@ -16,7 +16,7 @@ import {a} from '@react-spring/three';
 
 export default function Landing(props : JSX.IntrinsicElements["group"]) {
   
-  const group = useRef(null);
+  const group = useRef(null!);
   const { nodes: jakeNodes, materials: jakeMaterials } = useGLTF(
     "/assets/3d/jake_el_perro.glb"
   );
