@@ -1,6 +1,5 @@
 "use client";
 import { Spinner } from "@/components/spinner";
-import Jake from "@/models/jake";
 import Landing from "@/models/landing";
 import Sky from "@/models/sky";
 import { OrbitControls } from "@react-three/drei";
