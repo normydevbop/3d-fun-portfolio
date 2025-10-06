@@ -9,7 +9,7 @@ import { Suspense } from "react";
 const Home = () => {
    const adjustIslandForScreenSize = () => {
       let screenscale = null;
-      let screenPosition = [0, -1, 0];
+      const screenPosition = [0, -1, 0];
 
       if (window.innerWidth < 768) {
          screenscale = 0.9;
