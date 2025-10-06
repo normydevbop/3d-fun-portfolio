@@ -5,17 +5,18 @@ License: CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
 Source: https://sketchfab.com/3d-models/smol-ame-in-an-upcycled-terrarium-hololiveen-490cecc249d242188fda5ad3160a4b24
 Title: Smol Ame in an Upcycled Terrarium [HololiveEn]
 */
+"use client"
 
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, JSX } from 'react';
 import { useGLTF, useAnimations } from '@react-three/drei';
 import { useFrame, useThree } from '@react-three/fiber';
 import {a} from '@react-spring/three';
 
 
 
-export default function Landing(props) {
+export default function Landing(props : JSX.IntrinsicElements["group"]) {
   
-  const group = useRef();
+  const group = useRef(null);
   const { nodes: jakeNodes, materials: jakeMaterials } = useGLTF(
     "/assets/3d/jake_el_perro.glb"
   );
