@@ -22,7 +22,7 @@ export  default function Sky(props) {
           receiveShadow
           geometry={nodes.Sphere__0.geometry}
           material={materials['Scene_-_Root']}
-          rotation={[-Math.PI / 2, 0, 0]}
+          rotation={[-Math.PI / 2, -2, -2]}
           scale={50000}
         />
       </group>

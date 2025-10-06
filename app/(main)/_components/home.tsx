@@ -6,6 +6,7 @@ import { OrbitControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Suspense } from "react";
 const Home = () => {
+  /*
    const adjustIslandForScreenSize = () => {
       let screenscale = null;
       const screenPosition = [0, -1, 0];
@@ -18,7 +19,9 @@ const Home = () => {
       }
       return [screenscale,screenPosition];
    };
+   
    const [screenscale,screenPosition] = adjustIslandForScreenSize();
+   */
     return ( 
         
             <section className="w-full h-screen relative">
@@ -33,8 +36,8 @@ const Home = () => {
                 <pointLight/>
                 <spotLight/>
                 <hemisphereLight/>
-                <Sky/>
-                <Landing scale={screenscale} position={screenPosition} />
+                
+                <Landing  />
                 
 
                 <OrbitControls enablePan={false} enableZoom={true}  />
