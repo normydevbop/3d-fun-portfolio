@@ -111,10 +111,20 @@
 }
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
+
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  background: transparent !important;
+  overflow: hidden;
+}
+
+#__next {
+  height: 100%;
+}
+
+
 }

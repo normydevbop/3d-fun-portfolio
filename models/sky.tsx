@@ -10,22 +10,32 @@ Title: Fantasy Sky Background
 
 import React, { useRef } from 'react'
 import { useGLTF } from '@react-three/drei'
+import { useFrame } from '@react-three/fiber';
 
 export  default function Sky(props) {
 
-  const { nodes, materials } = useGLTF("/assets/3d/free_-_skybox_anime_sky.glb");
+  const group = useRef();
+
+ 
+
+  const { nodes, materials } = useGLTF("/assets/3d/skybox.glb");
+
+    useFrame((state, delta) => {
+    if (group.current) {
+      group.current.rotation.y += delta * 0.1; // Adjust speed here
+    }
+  });
+  
   return (
-      <group {...props} dispose={null}>
-      <group scale={0.01}>
-        <mesh
-          castShadow
-          receiveShadow
-          geometry={nodes.Sphere__0.geometry}
-          material={materials['Scene_-_Root']}
-          rotation={[-Math.PI / 2, -2, -2]}
-          scale={50000}
-        />
-      </group>
+         <group  ref={group} {...props} dispose={null}>
+      <mesh
+        castShadow
+        receiveShadow
+        geometry={nodes.Object_4.geometry}
+        material={materials.Skybox_mat}
+        scale={2}
+        rotation={[Math.PI / 8,0, 0]}
+      />
     </group>
   )
 }

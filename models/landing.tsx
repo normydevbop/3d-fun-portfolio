@@ -14,23 +14,32 @@ import {a} from '@react-spring/three';
 
 
 
-export default function Landing(props : JSX.IntrinsicElements["group"]) {
+export default function Landing({isRotating},props : JSX.IntrinsicElements["group"]) {
   
-  const group = useRef(null!);
+  const group = useRef<THREE.Group>(null);
+  
+  
+  
   const { nodes: jakeNodes, materials: jakeMaterials } = useGLTF(
     "/assets/3d/jake_el_perro.glb"
   );
    const { nodes: CourageNodes, materials: CourageMaterials } = useGLTF(
     "/assets/3d/courage_eggplant.glb"
   );
+
+  
   const { nodes, materials, animations } = useGLTF("/assets/3d/smol-ame.glb");
   const { actions, names } = useAnimations(animations, group);
-  const [hovered, setHovered] = useState(false);
+  
+
+
+
   const [ameHovered, setAmeHovered] = useState(false);
   const [jakeHovered, setJakeHovered] = useState(false);
   const [pekoHovered, setPekoHovered] = useState(false);
   const [courageHovered, setCourageHovered] = useState(false);
-  const anyHovered = ameHovered || jakeHovered || pekoHovered || courageHovered;
+  
+  const anyHovered = ameHovered || jakeHovered || pekoHovered || courageHovered ;
 
    useEffect(() => {
     if (names.length > 0) {
@@ -38,24 +47,20 @@ export default function Landing(props : JSX.IntrinsicElements["group"]) {
     }
   }, [actions, names]);
 
+ 
+
+
    useEffect(() => {
     const action = actions[names[0]];
     if (!action) return;
     anyHovered ? action.paused = true : action.paused = false;
   }, [anyHovered, actions, names]);
 
-  // Slight rotation
-  useFrame((state, delta) => {
-    if (!anyHovered) {
-    group.current.rotation.y += delta * 0.2;
-  }
-    
-  });
 
- 
+
 
   return ( 
-    <a.group ref={group} {...props}  >
+    <a.group ref={group} {...props}   position={[0,-1,0]} scale={1.2}>
       <group name="Sketchfab_Scene">
         <group name="Sketchfab_model" rotation={[-Math.PI / 2, 0, 0]}>
           <group name="root">
@@ -277,6 +282,12 @@ export default function Landing(props : JSX.IntrinsicElements["group"]) {
           />
         </group>
       </group>
+
+      {/**fish animation */}
+
+     
+
+
     </a.group>
   )
 }
