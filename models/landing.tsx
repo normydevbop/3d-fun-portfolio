@@ -7,17 +7,23 @@ Title: Smol Ame in an Upcycled Terrarium [HololiveEn]
 */
 "use client"
 
-import React, { useRef, useEffect, useState, JSX } from 'react';
+import React, { useRef, useEffect, useState} from 'react';
 import { useGLTF, useAnimations } from '@react-three/drei';
 import { useFrame, useThree } from '@react-three/fiber';
 import {a} from '@react-spring/three';
 
 
 
-export default function Landing({isRotating},props : JSX.IntrinsicElements["group"]) {
+export default function Landing({isRotating,setIsRotating,setCurrentStage,...props}) {
   
   const group = useRef<THREE.Group>(null);
+  const PalRef = useRef<THREE.Group>(null);
   
+
+  const {gl, viewport} = useThree();
+  const lastx = useRef(0);
+  const rotationSpeed = useRef(0);
+  const dampingFactor = 0.95;  
   
   
   const { nodes: jakeNodes, materials: jakeMaterials } = useGLTF(
@@ -26,6 +32,14 @@ export default function Landing({isRotating},props : JSX.IntrinsicElements["grou
    const { nodes: CourageNodes, materials: CourageMaterials } = useGLTF(
     "/assets/3d/courage_eggplant.glb"
   );
+
+   const { nodes: PalestineNodes, materials: PalestineMaterials, animations : PalAnimation } = useGLTF(
+    "/assets/3d/palestine_flag.glb"
+  );
+
+  
+ const { actions: palActions, names: palNames } = useAnimations(PalAnimation, PalRef);
+
 
   
   const { nodes, materials, animations } = useGLTF("/assets/3d/smol-ame.glb");
@@ -42,10 +56,18 @@ export default function Landing({isRotating},props : JSX.IntrinsicElements["grou
   const anyHovered = ameHovered || jakeHovered || pekoHovered || courageHovered ;
 
    useEffect(() => {
+    if (palNames.length > 0) {
+      palActions[palNames[0]]?.play();
+    }
+  }, [palActions, palNames]);
+
+   useEffect(() => {
     if (names.length > 0) {
       actions[names[0]]?.play();
     }
   }, [actions, names]);
+ 
+
 
  
 
@@ -56,6 +78,120 @@ export default function Landing({isRotating},props : JSX.IntrinsicElements["grou
     anyHovered ? action.paused = true : action.paused = false;
   }, [anyHovered, actions, names]);
 
+
+  const handlePointerDown = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setIsRotating(true);
+
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    lastx.current = clientX;
+
+  }
+
+    const handlePointerUp = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setIsRotating(false);
+
+   
+
+  }
+
+    const handlePointerMove = (e) => {
+    
+
+    if(isRotating) {
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+
+    const delta = (clientX - lastx.current) / viewport.width;
+    group.current.rotation.y +=  delta * 0.5 * Math.PI;
+    lastx.current = clientX;
+
+    rotationSpeed.current = delta * 0.01 * Math.PI;
+    }
+    
+
+  }
+
+
+  
+  const handleKeydown = (e) => {
+    if(e.key === "ArrowLeft") {
+      if(!isRotating) {
+        setIsRotating(true);
+        group.current.rotation.y += 0.01 * Math.PI; 
+      }
+      else if(e.key === "ArrowRight") {
+
+         if(!isRotating) {
+        setIsRotating(true);
+        group.current.rotation.y -= 0.01 * Math.PI; 
+      }
+
+      }
+    }
+  }
+  const handleKeyUp = (e) => {
+    if(e.key === "ArrowLeft" || e.key === "ArrowRight") {
+      setIsRotating(false);
+    }
+  }
+  
+useEffect(() => {
+
+  const canvas = gl.domElement;
+
+    canvas.addEventListener("pointerup",handlePointerUp);
+    canvas.addEventListener("pointerdown",handlePointerDown);
+    canvas.addEventListener("pointermove",handlePointerMove);
+    document.addEventListener("keydown",handleKeydown);
+    document.addEventListener("keyup",handleKeyUp);
+
+    return () => {
+canvas.removeEventListener("pointerup",handlePointerUp);
+    canvas.removeEventListener("pointerdown",handlePointerDown);
+    canvas.removeEventListener("pointermove",handlePointerMove);
+    document.removeEventListener("keydown",handleKeydown);
+    document.removeEventListener("keyup",handleKeyUp);
+    }
+
+  }, [gl,handlePointerDown,handlePointerUp,handlePointerMove]);
+
+
+useFrame(() => {
+  if (!isRotating) {
+    rotationSpeed.current *= dampingFactor;
+    if (Math.abs(rotationSpeed.current) < 0.01) {
+      rotationSpeed.current = 0;
+    }
+    group.current.rotation.y += rotationSpeed.current;
+  } else {
+    const rotation = group.current.rotation.y;
+    
+    // Normalize rotation to 0-2π range
+    const normalizeRotation = ((rotation % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+    
+    // Define stage ranges (spaced evenly around the circle)
+    const stageRanges = [
+      { stage: 1, min: 5.5, max: 6.1 },    // ~315°-350°
+      { stage: 2, min: 3.9, max: 4.5 },    // ~225°-260°
+      { stage: 3, min: 2.4, max: 3.0 },    // ~135°-170°
+      { stage: 4, min: 0.8, max: 1.4 }     // ~45°-80°
+    ];
+    
+    // Find which stage we're in
+    let detectedStage = null;
+    for (const range of stageRanges) {
+      if (normalizeRotation >= range.min && normalizeRotation <= range.max) {
+        detectedStage = range.stage;
+        break;
+      }
+    }
+    
+    setCurrentStage(detectedStage);
+  }
+});
 
 
 
@@ -283,9 +419,75 @@ export default function Landing({isRotating},props : JSX.IntrinsicElements["grou
         </group>
       </group>
 
-      {/**fish animation */}
+      {/**free palestine */}
 
-     
+         <group ref={PalRef} {...props} dispose={null}>
+      <group name="Sketchfab_Scene">
+        <group name="Sketchfab_model" rotation={[-Math.PI / 2, 0, 0]}>
+          <group
+            name="988e981dec904a1bb8b5b741de1b4f59fbx"
+            rotation={[Math.PI / 2, 0.7, 0]}
+            position={[1.8, -0.4, -0.2]} 
+            scale={0.05}>
+            <group name="Object_2">
+              <group name="RootNode">
+                <group name="Armature">
+                  <group name="Object_5">
+                    <primitive object={PalestineNodes._rootJoint} />
+                    <skinnedMesh
+                      name="Object_890"
+                      geometry={PalestineNodes.Object_890.geometry}
+                      material={PalestineMaterials.Flag_Mat}
+                      skeleton={PalestineNodes.Object_890.skeleton}
+                    />
+                    <group name="Object_889" position={[0, 31.142, -7.503]} />
+                  </group>
+                </group>
+                <group name="Flag" position={[0, 31.142, -7.503]} />
+                <group
+                  name="Cylinder"
+                  position={[0.026, 0, 0.3]}
+                  rotation={[-Math.PI / 2, 0, 0]}
+                  scale={0.331}>
+                  <mesh
+                    name="Cylinder_Material001_0"
+                    castShadow
+                    receiveShadow
+                    geometry={PalestineNodes.Cylinder_Material001_0.geometry}
+                    material={PalestineMaterials['Material.001']}
+                  />
+                </group>
+                <group
+                  name="Cylinder001"
+                  position={[0, 2.609, 0.291]}
+                  rotation={[-Math.PI / 2, 0, 0]}
+                  scale={2.957}>
+                  <mesh
+                    name="Cylinder001__0"
+                    castShadow
+                    receiveShadow
+                    geometry={PalestineNodes.Cylinder001__0.geometry}
+                    material={PalestineMaterials['Cylinder.001__0']}
+                  />
+                </group>
+                <group
+                  name="Camera"
+                  position={[91.14, 41.543, -17.113]}
+                  rotation={[-3.141, -0.112, 3.035]}
+                  scale={100}>
+                  <group name="Object_897" />
+                </group>
+                <group name="Spot" position={[0, 126.485, 0]} scale={7.507}>
+                  <group name="Object_899" rotation={[Math.PI / 2, 0, 0]}>
+                    <group name="Object_900" />
+                  </group>
+                </group>
+              </group>
+            </group>
+          </group>
+        </group>
+      </group>
+    </group>
 
 
     </a.group>

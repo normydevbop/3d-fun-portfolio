@@ -26,13 +26,13 @@ const NavBar = () => {
         
        
         <nav className="flex text-lg gap-7 font-medium mr-10 bg-transparent">
-             <Link href={"/about"}   className={pathname === "/about" ? "text-gray-500" : "text-black"}>
+             <Link href={"/about"}   className={pathname === "/about" ? "text-blue-500" : "text-black"}>
         <p>About</p>
         </Link>
-        <Link href={"/projects"} className={pathname === "/projects" ? "text-gray-500" : "text-black"} >
+        <Link href={"/projects"} className={pathname === "/projects" ? "text-blue-500" : "text-black"} >
         <p>Projects</p>
         </Link>
-        <Link href={"/contact"} className={pathname === "/contact" ? "text-gray-500" : "text-black"} >
+        <Link href={"/contact"} className={pathname === "/contact" ? "text-blue-500" : "text-black"} >
         <p>Contact</p>
         </Link>
         </nav>

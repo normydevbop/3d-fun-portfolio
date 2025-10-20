@@ -4,7 +4,7 @@ const ContactPage = () => {
     return ( 
         <div>
             <NavBar />
-            contact me nigga
+            
         </div>
      );
 }

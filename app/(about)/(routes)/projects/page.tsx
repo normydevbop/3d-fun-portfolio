@@ -4,7 +4,7 @@ const ProjectsPage = () => {
     return ( 
         <div>
             <NavBar />
-            this is the projects
+            
         </div>
      );
 }
